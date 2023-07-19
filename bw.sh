@@ -5,13 +5,15 @@ trap "kill 0" EXIT
 
 piped &
 
+sleep 5
+
 (od < /dev/urandom | pubmsg test &)
 
 echo "start readers"
 # 20 readers
 #
 
-for i in {0..18}
+for i in {0..8}
 do
     echo "$i"
     (submsg | pv -a &>/dev/null &)

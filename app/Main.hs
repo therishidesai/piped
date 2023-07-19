@@ -1,7 +1,8 @@
 module Main where
 
 import qualified Data.ByteString as BS
-import qualified Data.ByteString.Char8 as BSC
+import qualified Data.ByteString.Lazy as BSL
+import qualified Data.ByteString.Lazy.Char8 as BSC
 
 import Network.Run.TCP
 import Network.Socket.ByteString.Lazy
@@ -20,15 +21,16 @@ import Control.Concurrent.STM
 
 
 publisherWorker :: Handle -> TQueue BS.ByteString -> IO ()
-publisherWorker h dq = forever $ do
-  l <- BSC.hGetLine h
-  atomically $ writeTQueue dq l
+publisherWorker h dq = do
+  l <- BSC.hGetContents h
+  let ll = BSL.toChunks l
+  mapM_ (atomically . writeTQueue dq) ll
 
 subscriberWorker :: MVar [Handle] -> TQueue BS.ByteString -> IO ()
 subscriberWorker subs dq = forever $ do
   d <- atomically $ readTQueue dq
   s <- readMVar subs
-  mapM_ (`BS.hPut` BS.snoc d 0xA) s
+  mapM_ (`BS.hPut` d) s
 
 main :: IO ()
 main = do
