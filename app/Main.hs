@@ -22,7 +22,6 @@ import Control.Concurrent.STM
 publisherWorker :: Handle -> TQueue BS.ByteString -> IO ()
 publisherWorker h dq = forever $ do
   l <- BSC.hGetLine h
-  print l
   atomically $ writeTQueue dq l
 
 subscriberWorker :: MVar [Handle] -> TQueue BS.ByteString -> IO ()
@@ -42,7 +41,6 @@ main = do
         msg <- deserialise <$> recv conn 1024
         case msg of
           Publisher t -> do
-            putStrLn $ "Publisher: " ++ t
             createNamedPipe t 0o777
             fd <- openFd t ReadWrite Nothing defaultFileFlags
             h <- fdToHandle fd
@@ -51,14 +49,10 @@ main = do
             sendAll conn $ serialise ()
 
           Subscriber t -> do
-            putStrLn $ "Subscriber: " ++ t
             createNamedPipe t 0o777
             fd <- openFd t ReadWrite Nothing defaultFileFlags
             h <- fdToHandle fd
             hSetBuffering h LineBuffering
-            putStrLn "take the mvar"
             subs' <- takeMVar subs
-            putStrLn "took the mvar"
-            print subs'
             putMVar subs $ h : subs'
             sendAll conn $ serialise ()

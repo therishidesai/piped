@@ -28,9 +28,20 @@
       in flake // {
         legacyPackages = pkgs;
 
-        packages.default = flake.packages."piped:exe:piped";
+        packages.piped = flake.packages."piped:exe:piped";
         packages.pubmsg = flake.packages."piped:exe:pubmsg";
         packages.submsg = flake.packages."piped:exe:submsg";
+        packages.bw-test = pkgs.writeShellApplication {
+          name = "bw-test";
+          runtimeInputs =  with self.packages.${system}; [
+            piped
+            pubmsg
+            submsg
+            pkgs.pv
+          ];
+
+          text = builtins.readFile ./bw.sh;
+        };
       });
 
   # --- Flake Local Nix Configuration ----------------------------
