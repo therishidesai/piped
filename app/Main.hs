@@ -20,10 +20,11 @@ import Control.Concurrent
 
 publisherWorker :: Handle -> MVar [Handle] -> IO ()
 publisherWorker h subs = forever $ do
-  l <- BS.hGetLine h
+  l <- BSC.hGetContents h
   s <- readMVar subs
-  let ll = BS.snoc l 0xA
-  mapM_ (`BS.hPut` ll) s
+  print s
+  let ll = BSC.toChunks l
+  mapM_ (\x -> mapM_ (x `BS.hPut`) ll) s
 
 main :: IO ()
 main = do
