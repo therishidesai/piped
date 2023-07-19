@@ -51,12 +51,40 @@ extra-doc-files:    CHANGELOG.md
 -- Extra source files to be distributed with the package, such as examples, or a tutorial module.
 -- extra-source-files:
 
+common maybe-unix
+  if !os(windows)
+    build-depends:      unix
+
 common warnings
     ghc-options: -Wall
 
-executable piped
+library
     -- Import common warning flags.
     import:           warnings
+
+    -- Modules exported by the library.
+    exposed-modules:  Piped
+
+    -- Modules included in this library but not exported.
+    -- other-modules:
+
+    -- LANGUAGE extensions used by modules in this package.
+    -- other-extensions:
+
+    -- Other library packages from which modules are imported.
+    build-depends:    base ^>=4.16.4.0,
+                      serialise
+
+    -- Directories containing source files.
+    hs-source-dirs:   src
+
+    -- Base language which the package is written in.
+    default-language: Haskell2010
+
+executable piped
+    -- Import common warning flags.
+    import:           warnings,
+                      maybe-unix
 
     -- .hs or .lhs file containing the Main module.
     main-is:          Main.hs
@@ -68,10 +96,72 @@ executable piped
     -- other-extensions:
 
     -- Other library packages from which modules are imported.
-    build-depends:    base ^>=4.16.4.0
+    build-depends:    base ^>=4.16.4.0,
+                      network,
+                      network-run,
+                      bytestring,
+                      serialise,
+                      stm,
+                      piped
 
     -- Directories containing source files.
-    hs-source-dirs:   src
+    hs-source-dirs:   app
+
+    -- Base language which the package is written in.
+    default-language: Haskell2010
+
+executable pubmsg
+    -- Import common warning flags.
+    import:           warnings,
+                      maybe-unix
+
+    -- .hs or .lhs file containing the Main module.
+    main-is:          Pubmsg.hs
+
+    -- Modules included in this executable, other than Main.
+    -- other-modules:
+
+    -- LANGUAGE extensions used by modules in this package.
+    -- other-extensions:
+
+    -- Other library packages from which modules are imported.
+    build-depends:    base ^>=4.16.4.0,
+                      network,
+                      network-run,
+                      bytestring,
+                      serialise,
+                      piped
+
+    -- Directories containing source files.
+    hs-source-dirs:   app
+
+    -- Base language which the package is written in.
+    default-language: Haskell2010
+
+executable submsg
+    -- Import common warning flags.
+    import:           warnings,
+                      maybe-unix
+
+    -- .hs or .lhs file containing the Main module.
+    main-is:          Submsg.hs
+
+    -- Modules included in this executable, other than Main.
+    -- other-modules:
+
+    -- LANGUAGE extensions used by modules in this package.
+    -- other-extensions:
+
+    -- Other library packages from which modules are imported.
+    build-depends:    base ^>=4.16.4.0,
+                      bytestring,
+                      network,
+                      network-run,
+                      serialise,
+                      piped
+
+    -- Directories containing source files.
+    hs-source-dirs:   app
 
     -- Base language which the package is written in.
     default-language: Haskell2010

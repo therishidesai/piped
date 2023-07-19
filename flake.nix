@@ -29,6 +29,8 @@
         legacyPackages = pkgs;
 
         packages.default = flake.packages."piped:exe:piped";
+        packages.pubmsg = flake.packages."piped:exe:pubmsg";
+        packages.submsg = flake.packages."piped:exe:submsg";
       });
 
   # --- Flake Local Nix Configuration ----------------------------
