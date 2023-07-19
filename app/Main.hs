@@ -19,22 +19,15 @@ import Control.Monad
 import Control.Concurrent
 
 publisherWorker :: Handle -> MVar [Handle] -> IO ()
-publisherWorker h subs = do
-  l <- BSC.hGetContents h
+publisherWorker h subs = forever $ do
+  l <- BS.hGetLine h
   s <- readMVar subs
-  mapM_ (`BSC.hPut` l) s
-
--- subscriberWorker :: MVar [Handle] -> Chan BS.ByteString -> IO ()
--- subscriberWorker subs dq = forever $ do
---   d <- readChan dq
---   s <- readMVar subs
---   mapM_ (`BS.hPut` d) s
+  let ll = BS.snoc l 0xA
+  mapM_ (`BS.hPut` ll) s
 
 main :: IO ()
 main = do
   subs <- newMVar []
-  -- dataq <- newChan
-  -- _ <- forkIO (subscriberWorker subs dataq)
   runTCPServer Nothing "4242" $ talk subs
   where
     talk subs conn = do
