@@ -34,6 +34,7 @@
         packages.bw-test = pkgs.writeShellApplication {
           name = "bw-test";
           runtimeInputs =  with self.packages.${system}; [
+            pkgs.coreutils
             piped
             pubmsg
             submsg
